@@ -5,42 +5,21 @@ import (
 )
 
 func main() {
-	eve := make(chan int)
-	odd := make(chan int)
-	quit := make(chan int)
+	//With anonymus func literal launching a Goroutine
+	c := make(chan int)
 
-	//send
-	go send(eve, odd, quit)
+	go func() {
+		c <- 42
+	}()
 
-	//recieve
-	recieve(eve, odd, quit)
+	fmt.Println(<-c)
 
-	fmt.Println("About to exit")
-}
+	//With buffer channel
+	b := make(chan int, 1)
+	b <- 42
 
-//recieve
-func recieve(e, o, q <-chan int) {
-	for {
-		select {
-		case v := <-e:
-			fmt.Println("From the even channel: ", v)
-		case v := <-o:
-			fmt.Println("From the odd channel: ", v)
-		case v := <-q:
-			fmt.Println("From the quit channel: ", v)
-			return
-		}
-	}
-}
+	fmt.Println(<-b)
 
-//send
-func send(e, o, q chan<- int) {
-	for i := 0; i < 100; i++ {
-		if i%2 == 0 {
-			e <- i
-		} else {
-			o <- i
-		}
-	}
-	q <- 0
+	//If using a channel without a goroutine or buffer channel we end up with a deadlock
+	// - Error: all Goroutines are asleep
 }
