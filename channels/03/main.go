@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+//Putting values onto a channel -< then pulling the values off the channel using a for range loop
+
 func main() {
 	c := gen()
 	receive(c)
